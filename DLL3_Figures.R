@@ -1,66 +1,8 @@
 # Package imports 
 library(dplyr) # For parsing
-library(ggpubr) # For pretty scatter plots; http://www.sthda.com/english/articles/24-ggpubr-publication-ready-plots/81-ggplot2-easy-way-to-mix-multiple-graphs-on-the-same-page/
+library(ggpubr) # For plotting
 
-# Data is from JCO 2018 dataset (aggarwal)
-
-# Import data. Ignore warning
-dat <- read.csv("DLL3_STEAP1_EXP.csv",  header = TRUE, row.names = "samples")
-dat2 <- read.csv("DLL3_FOLH1_EXP.csv",  header = TRUE, row.names = "samples")
-
-# Convert to vectors for plotting
-STEAP1 <- as.numeric(dat['STEAP1',]) # Vector with STEAP1 EXP
-dll3 <- as.numeric(dat['DLL3',]) # Vector with DLL3 EXP
-psma <- as.numeric(dat2['FOLH1',]) # Vector with PSMA EXP
-
-nepc <- dat['Subtype',] # Vector with whether NEPC/AdPC
-
-# Convert NEPC/AdPC to colors for the scatterplot
-ne <- vector(mode = "list", length = 119)
-for (i in 1:119){
-  if (nepc[i] == 'NEPC'){ne[i] = 'red'}
-  else{ne[i] = 'grey'}
-}
-
-jpeg("dll3_JCO18_data.jpg", units='in', width = 15, height = 5, res = 300)
-fig1 <- gghistogram(dll3, bins = 20, fill = 'blue', xlab = 'normalized expression', ylab = '% mCRPC samples', main = 'DLL3 Expression')
-fig2 <- gghistogram(psma, bins = 20, fill = 'blue', xlab = 'normalized expression', ylab = '% mCRPC samples', main = 'FOLH1 Expression')
-
-# Plot the scatterplot of folh1 vs DLL3. Ignore the warning message. 
-df <- data.frame("normalized_DLL3" = dll3, "normalized_PSMA" = psma)
-fig3 <- ggscatter(df, y = "normalized_DLL3", x = "normalized_PSMA",
-                  main = 'FOLH1 vs DLL3',
-                  xlab = 'normalized PSMA expression',
-                  ylab = 'normalized DLL3 expression',
-                  add = "reg.line", # Add regression line
-                  col = unlist(ne),
-                  add.params = list(color = "blue",
-                                    fill = "lightgray")
-)+stat_cor(method = "pearson", label.x = 19, label.y = 15)+ylim(4,16)+xlim(6,24)  
-
-# Plot the scatterplot of STEAP1 vs DLL3. Ignore the warning message. 
-df <- data.frame("normalized_DLL3" = dll3, "normalized_STEAP1" = STEAP1)
-fig4 <- ggscatter(df, y = "normalized_DLL3", x = "normalized_STEAP1",
-                  main = 'STEAP1 vs DLL3',
-                  xlab = 'normalized STEAP1 expression',
-                  ylab = 'normalized DLL3 expression',
-                  add = "reg.line", # Add regression line
-                  col = unlist(ne),
-                  add.params = list(color = "blue",
-                                    fill = "lightgray")
-)+stat_cor(method = "pearson", label.x = 16, label.y = 15)+ylim(4,17)+xlim(8,21)  
-
-# Arrange for figure
-ggarrange(#ggarrange(fig1, fig2, nrow = 2, labels = c("A", "B")), # First column with histograms
-          ggarrange(fig3, labels = "A"), # First column with scatterplot
-          ggarrange(fig4, labels = "B"), # Second column with scatterplot
-          ncol = 2
-) 
-
-# Turn off
-dev.off()
-
-#######
+## Plot correlations from Quigley 2018 dataset
 
 # Import data. Ignore warning
 dat <- read.csv("DLL3_STEAP1_LogTPM.csv",  header = TRUE, row.names = "IDENTIFIER")
@@ -121,7 +63,7 @@ ggarrange(ggarrange(fig5, labels = "A"), # First column with scatterplot
 dev.off()
 
 
-#######
+## Plot correlations from Kumar dataset
 
 # Import data. Ignore warning
 dat <- read.csv("DLL3_STEAP1_kumar.csv",  header = TRUE, row.names = "IDENTIFIER")
@@ -179,7 +121,7 @@ dev.off()
 
 
 
-#######
+## Plot correlations from Beltran 2016 dataset
 
 # Import data. Ignore warning
 dat <- read.csv("DLL3_STEAP1_beltran.csv",  header = TRUE, row.names = "IDENTIFIER")
@@ -237,5 +179,8 @@ ggarrange(ggarrange(fig5, labels = "A"), # First column with scatterplot
 
 # Turn off
 dev.off()
+
+
+
 
 
